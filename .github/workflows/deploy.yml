@@ -1,0 +1,51 @@
+name: Deploy Cloud Function
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Google Cloud Functions
+    runs-on: ubuntu-latest
+    
+    # Permissions yang diperlukan untuk OIDC token
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy Cloud Function
+        run: |
+          gcloud functions deploy getPublicUrl \
+            --gen2 \
+            --runtime=nodejs18 \
+            --region=asia-southeast2 \
+            --source=. \
+            --entry-point=getPublicUrl \
+            --trigger-http \
+            --allow-unauthenticated \
+            --project=${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Get Function URL
+        run: |
+          FUNCTION_URL=$(gcloud functions describe getPublicUrl \
+            --region=asia-southeast2 \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --gen2 \
+            --format='value(serviceConfig.uri)')
+          echo "🚀 Function deployed successfully!"
+          echo "📍 Function URL: $FUNCTION_URL"
+
