@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "functions-framework --target=getPublicUrl --port=8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
@@ -17,3 +17,4 @@
     "@google-cloud/storage": "^7.7.0"
   }
 }
+
