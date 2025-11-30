@@ -27,10 +27,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-
-      - name: Echo secret key my-secret from Secret Manager
-        run: |
-          gcloud secrets versions access latest --secret="my-secret"
           
       - name: Deploy Cloud Function
         run: |
