@@ -42,6 +42,7 @@ jobs:
             --entry-point=getPublicUrl \
             --trigger-http \
             --allow-unauthenticated \
+            --build-service-account=${{ secrets.GCP_SERVICE_ACCOUNT }}
             --project=${{ secrets.GCP_PROJECT_ID }}
 
       - name: Get Function URL
