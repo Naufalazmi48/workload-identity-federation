@@ -29,8 +29,6 @@ jobs:
           
       - name: Deploy Cloud Function
         run: |
-          gcloud auth application-default login --impersonate-service-account=${{ secrets.GCP_SERVICE_ACCOUNT }}
-
           gcloud functions deploy getPublicUrl \
             --gen2 \
             --runtime=nodejs18 \
