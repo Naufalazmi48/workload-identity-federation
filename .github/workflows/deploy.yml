@@ -36,13 +36,14 @@ jobs:
         run: |
           gcloud functions deploy getPublicUrl \
             --gen2 \
-            --runtime=nodejs18 \
+            --runtime=nodejs22 \
             --region=asia-southeast2 \
             --source=. \
             --entry-point=getPublicUrl \
             --trigger-http \
             --allow-unauthenticated \
             --project=${{ secrets.GCP_PROJECT_ID }}
+
       - name: Get Function URL
         run: |
           FUNCTION_URL=$(gcloud functions describe getPublicUrl \
