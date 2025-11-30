@@ -17,20 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get and decode OIDC token
-        run: |
-          # Request token OIDC dari GitHub
-          OIDC_TOKEN=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL?audience=google-cloud" | jq -r '.value')
-
-          echo "Full OIDC token: $OIDC_TOKEN"
-
-          # Decode JWT payload (base64) dan format JSON
-          PAYLOAD=$(echo "$OIDC_TOKEN" | cut -d "." -f2 | base64 --decode | jq)
-          
-          echo "Decoded OIDC payload:"
-          echo "$PAYLOAD"
-
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -43,6 +29,10 @@ jobs:
           
       - name: Deploy Cloud Function
         run: |
+          echo "Aktif user gcloud:"
+          gcloud auth list
+          echo
+
           gcloud functions deploy getPublicUrl \
             --gen2 \
             --runtime=nodejs18 \
@@ -52,7 +42,6 @@ jobs:
             --trigger-http \
             --allow-unauthenticated \
             --project=${{ secrets.GCP_PROJECT_ID }}
-
       - name: Get Function URL
         run: |
           FUNCTION_URL=$(gcloud functions describe getPublicUrl \
