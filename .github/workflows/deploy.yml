@@ -17,6 +17,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Print OIDC Token
+        id: print-oidc
+        run: |
+          echo "ID token from authentication step:"
+          echo "${{ steps.auth.outputs.id_token }}" | cut -d "." -f2 | base64 -d | jq '.'
+          echo "Raw OIDC token:"
+          echo "${{ steps.auth.outputs.id_token }}"
+
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -26,7 +34,7 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-
+          
       - name: Deploy Cloud Function
         run: |
           gcloud functions deploy getPublicUrl \
