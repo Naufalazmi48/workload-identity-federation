@@ -1,4 +1,5 @@
 const functions = require('@google-cloud/functions-framework');
+const { createEvent } = require('./services/CalendarService.js');
 const { Storage } = require('@google-cloud/storage');
 
 // Inisialisasi Storage client
@@ -97,3 +98,30 @@ functions.http('getPublicUrl', async (req, res) => {
   }
 });
 
+functions.http('createCalendar', async (req, res) => {
+  // Set CORS headers
+  res.set('Access-Control-Allow-Origin', '*');
+  
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.set('Access-Control-Max-Age', '3600');
+    res.status(204).send('');
+    return;
+  }
+
+  try {
+    await createEvent();
+    res.status(200).json({
+      success: true,
+      message: "ack"
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Terjadi kesalahan saat memproses permintaan',
+      message: error.message
+    });
+  }
+});
